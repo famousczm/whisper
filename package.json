@@ -1,0 +1,14 @@
+{
+  "name": "chatdemo",
+  "version": "0.0.0",
+  "private": true,
+  "main": "app.js",
+  "license": "BSD",
+  "scripts": {
+    "start": "supervisor ./bin/www"
+  },
+  "dependencies": {
+    "express": "~4.15.5",
+    "socket.io": "*"
+  }
+}
