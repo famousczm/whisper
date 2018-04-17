@@ -15,6 +15,9 @@ $(function() {
 	let $messages = $('.messages')
 	// Input message input box
 	let $inputMessage = $('.inputMessage')
+	// Send message button
+	let $add = $('#add')[0]
+	$add.onclick = sendMessage
 
   // The login page
 	let $loginPage = $('.login.page')
@@ -40,7 +43,7 @@ $(function() {
 
   // 设置用户昵称
 	function setUsername () {
-		username = cleanInput($usernameInput.val().trim())
+		username = cleanInput($usernameInput.val().trim()).replace(/\s+/g, '')
 
 	  // 关闭登录页，显示聊天页面
 		if (username) {
@@ -54,9 +57,13 @@ $(function() {
 		}
 	}
 
-  // sends a chat message
+  // 发送一条消息
 	function sendMessage () {
 		let message = cleanInput($inputMessage.val())
+		if (!message || message.replace(/\s+/g, '') === '') {
+			$inputMessage.val('')
+			return
+		}
 		// if there is a non-empty message and a socket connection
 		if (message && connected) {
 			$inputMessage.val('')
@@ -67,16 +74,27 @@ $(function() {
 			// 发送发送信息请求
 			socket.emit('new message', message)
 		}
+
+		socket.emit('stop typing')
+		typing = false
 	}
 
-	// Log a message
+	/**
+	* 打印一个消息
+	* @param data
+	* @param options
+	*/
 	function log (message, options) {
 		if (!message) return
 		let $el = $('<li>').addClass('log').text(message)
 		addMessageElement($el, options)
 	}
 
-	// 增加一条消息
+	/**
+	* 增加一条聊天消息
+	* @param data
+	* @param options
+	*/
 	function addChatMessage (data, options) {
 		if (!data) return
 		// Don't fade the message in if there is an 'X was typing'
@@ -103,15 +121,21 @@ $(function() {
 		addMessageElement($messageDiv, options)
 	}
 
-  // Adds the visual chat typing message
+	/**
+	* 增加一条正在输入的信息
+	* @param data
+	*/
   function addChatTyping (data) {
 		if (!data) return
 		data.typing = true
-		data.message = 'is typing'
+		data.message = '正在输入...'
 		addChatMessage(data)
 	}
 
-  // Removes the visual chat typing message
+  /**
+	* 移除正在输入的消息
+	* @param data
+	*/
 	function removeChatTyping(data) {
 		if (!data) return
 		getTypingMessages(data).fadeOut(function () {
@@ -119,11 +143,13 @@ $(function() {
 		})
 	}
 
-	// 增加一条消息在屏幕上
-	// el - The element to add as a message
-	// options.fade - If the element should fade-In (default = true)
-	// options.prepend - If the element should prepend
-	// all other messages (default = false)
+	/**
+	* 增加一条消息在屏幕上
+	* @param el - 新增的消息元素
+	* @param options - 配置参数，可选
+	*        options.fade - 元素是否要有隐现效果，默认 true
+	*        options.prepend - 元素应该放置在所以消息之前，默认 false
+	*/
 	function addMessageElement (el, options) {
 		if (!el) return
 		var $el = $(el)
@@ -151,13 +177,18 @@ $(function() {
 		$messages[0].scrollTop = $messages[0].scrollHeight
 	}
 
-  // 过滤输入内容，防止输入注入标记
+	/**
+	* 过滤输入内容，防止输入注入标记
+	* @param input
+	*/
 	function cleanInput (input) {
 		if (!input) return
 		return $('<div/>').text(input).html()
 	}
 
-	// Updates the typing event
+	/**
+	* 更新正在输入事件
+	*/
 	function updateTyping () {
 		if (connected) {
 			if (!typing) {
@@ -166,6 +197,7 @@ $(function() {
 			}
 			lastTypingTime = (new Date()).getTime()
 
+      // 设置定时器来判断是否在连续输入中
 			setTimeout(function () {
 				let typingTimer = (new Date()).getTime()
 				let timeDiff = typingTimer - lastTypingTime
@@ -177,7 +209,10 @@ $(function() {
 		}
 	}
 
-  // Gets the 'X is typing' message of a user
+	/**
+	* 获得 'X 正在输入' 的信息
+	* @param data
+	*/
 	function getTypingMessages (data) {
 		if (!data) return
 		return $('.typing.message').filter(function (i) {
@@ -185,7 +220,11 @@ $(function() {
 		})
 	}
 
-  // 根据用户名通过特定算法获得颜色
+	/**
+	* 根据用户名通过特定算法获得颜色
+	* @param username
+	* @return {String}
+	*/
   function getUsernameColor (username) {
 		if (!username) return
 		// Compute hash code
@@ -211,8 +250,6 @@ $(function() {
 		if (event.which === 13) {
 			if (username) {
 				sendMessage()
-				socket.emit('stop typing')
-				typing = false
 			} else {
 				setUsername()
 			}

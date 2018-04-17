@@ -38,6 +38,7 @@ ul {
   margin: 0;
   padding: 0;
   width: 100%;
+  position: relative;
 }
 
 .page {
@@ -66,8 +67,9 @@ ul {
   background-color: transparent;
   border: none;
   border-bottom: 2px solid #fff;
+  margin-top: 10px;
   outline: none;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
   text-align: center;
   width: 400px;
 }
@@ -135,15 +137,53 @@ ul {
 }
 
 /* Input */
+.inputWrapper {
+  width: 50vw;
+  height: 65px;
+  position: fixed;
+  bottom: 65px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
 
 .inputMessage {
-  border: 10px solid #000;
-  bottom: 0;
-  height: 60px;
-  left: 0;
+  width: calc(100% - 75px);
+  height: 100%;
+  background-color: #2f2f2f;
+  padding-left: 15px;
   outline: none;
-  padding-left: 10px;
-  position: absolute;
-  right: 0;
-  width: 100%;
+  border: none;
+  border-bottom: 2px solid #b2b2b2;
+  font-family: 'Raleway', sans-serif;
+  float: left;
+  font-weight: 100;
+  font-size: 2em;
+  color: whitesmoke;
+}
+
+.inputMessage:focus, .inputMessage #add {
+  background-color: #2c2c2c;
+  border-bottom: 2px solid whitesmoke;
+}
+
+#add {
+  width: 75px;
+  height: 65px;
+  outline: none;
+  border: none;
+  background-color: #2f2f2f;
+  color: #b2b2b2;
+  border-bottom: 2px solid #b2b2b2;
+  font-family: 'Raleway', sans-serif;
+  font-size: 4em;
+  font-weight: 100;
+  cursor: pointer;
+  line-height: 1.1em;
+}
+
+#add:hover {
+  color: whitesmoke;
+  border-bottom: 2px solod whitesmoke;
+  background-color: #2c2c2c;
 }
